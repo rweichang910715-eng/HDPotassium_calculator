@@ -1,0 +1,336 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>補充鉀離子計算器</title>
+<style>
+  :root {
+    --bg: #f5f7fa;
+    --card-bg: #ffffff;
+    --primary: #2563eb;
+    --primary-dark: #1d4ed8;
+    --text: #1e293b;
+    --muted: #64748b;
+    --border: #e2e8f0;
+    --accent: #0f766e;
+    --output-bg: #ecfdf5;
+    --output-border: #10b981;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", "Microsoft JhengHei", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding: 24px 16px 60px;
+  }
+  .container {
+    max-width: 640px;
+    margin: 0 auto;
+  }
+  h1 {
+    font-size: 1.4rem;
+    text-align: center;
+    margin-bottom: 4px;
+  }
+  .subtitle {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.85rem;
+    margin-bottom: 20px;
+  }
+  .tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .tab-btn {
+    flex: 1;
+    padding: 12px 8px;
+    border: none;
+    border-radius: 10px;
+    background: #e2e8f0;
+    color: var(--muted);
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+  }
+  .tab-btn.active {
+    background: var(--primary);
+    color: white;
+  }
+  .card {
+    background: var(--card-bg);
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  }
+  .panel { display: none; }
+  .panel.active { display: block; }
+  .field {
+    margin-bottom: 14px;
+  }
+  .field label {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .field input {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 1rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: #fafbfc;
+    color: var(--text);
+  }
+  .field input:focus {
+    outline: none;
+    border-color: var(--primary);
+    background: white;
+  }
+  .output-main {
+    margin-top: 20px;
+    padding: 18px;
+    border-radius: 12px;
+    background: var(--output-bg);
+    border: 1.5px solid var(--output-border);
+    text-align: center;
+  }
+  .output-main .label {
+    font-size: 0.9rem;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .output-main .value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .output-main .unit {
+    font-size: 1rem;
+    font-weight: 500;
+    margin-left: 4px;
+  }
+  .toggle-btn {
+    display: block;
+    width: 100%;
+    margin-top: 16px;
+    padding: 10px;
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--muted);
+    font-size: 0.85rem;
+    cursor: pointer;
+  }
+  .toggle-btn:hover {
+    background: #f8fafc;
+  }
+  .details {
+    display: none;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--border);
+  }
+  .details.show { display: block; }
+  .detail-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 7px 0;
+    font-size: 0.88rem;
+    border-bottom: 1px solid #f1f5f9;
+  }
+  .detail-row:last-child { border-bottom: none; }
+  .detail-row .k { color: var(--muted); }
+  .detail-row .v { font-weight: 600; }
+  .warn {
+    margin-top: 10px;
+    font-size: 0.8rem;
+    color: #b45309;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: 8px;
+    padding: 8px 10px;
+    display: none;
+  }
+  .warn.show { display: block; }
+</style>
+
+<div class="container">
+  <h1>補充鉀離子計算器</h1>
+  <div class="subtitle">血液透析 A 液鉀離子換算</div>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="query">查詢目前濃度</button>
+    <button class="tab-btn" data-tab="target">計算要加多少鉀</button>
+  </div>
+
+  <div class="card">
+    <!-- Panel 1: 查詢目前透析液中鉀濃度 -->
+    <div class="panel active" id="panel-query">
+      <div class="field">
+        <label>總稀釋倍數</label>
+        <input type="number" id="q-dilution" value="36.83" step="any">
+      </div>
+      <div class="field">
+        <label>A液容量 (L)</label>
+        <input type="number" id="q-volA" value="3.8" step="any">
+      </div>
+      <div class="field">
+        <label>外加鉀 (mEq)</label>
+        <input type="number" id="q-addedK" value="0" step="any">
+      </div>
+      <div class="field">
+        <label>已進行透析時間 (min)</label>
+        <input type="number" id="q-time" value="0" step="any">
+      </div>
+      <div class="field">
+        <label>透析流速 (ml/min)</label>
+        <input type="number" id="q-flow" value="500" step="any">
+      </div>
+
+      <div class="output-main">
+        <div class="label">透析液中鉀濃度</div>
+        <div class="value" id="q-result">--<span class="unit">mEq/L</span></div>
+      </div>
+      <div class="warn" id="q-warn">剩下A液容量已經是負值，請確認透析時間/流速是否超過A液可用範圍。</div>
+
+      <button class="toggle-btn" id="q-toggle">顯示計算過程 ▾</button>
+      <div class="details" id="q-details">
+        <div class="detail-row"><span class="k">A液中鉀濃度 (mEq/L)</span><span class="v" id="q-d1">--</span></div>
+        <div class="detail-row"><span class="k">剩下A液容量 (L)</span><span class="v" id="q-d2">--</span></div>
+        <div class="detail-row"><span class="k">A液剩下鉀含量 (mEq)</span><span class="v" id="q-d3">--</span></div>
+        <div class="detail-row"><span class="k">外加鉀後A液鉀含量 (mEq)</span><span class="v" id="q-d4">--</span></div>
+        <div class="detail-row"><span class="k">外加鉀後A液鉀濃度 (mEq/L)</span><span class="v" id="q-d5">--</span></div>
+        <div class="detail-row"><span class="k">相當於原本加多少mEq的鉀</span><span class="v" id="q-d6">--</span></div>
+      </div>
+    </div>
+
+    <!-- Panel 2: 計算需要外加多少鉀 -->
+    <div class="panel" id="panel-target">
+      <div class="field">
+        <label>總稀釋倍數</label>
+        <input type="number" id="t-dilution" value="36.83" step="any">
+      </div>
+      <div class="field">
+        <label>透析液中目標鉀濃度 (mEq/L)</label>
+        <input type="number" id="t-targetK" value="3.0" step="any">
+      </div>
+      <div class="field">
+        <label>A液容量 (L)</label>
+        <input type="number" id="t-volA" value="3.8" step="any">
+      </div>
+      <div class="field">
+        <label>已進行透析時間 (min)</label>
+        <input type="number" id="t-time" value="50" step="any">
+      </div>
+      <div class="field">
+        <label>透析流速 (ml/min)</label>
+        <input type="number" id="t-flow" value="500" step="any">
+      </div>
+
+      <div class="output-main">
+        <div class="label">總共要外加多少鉀</div>
+        <div class="value" id="t-result">--<span class="unit">mEq</span></div>
+      </div>
+      <div class="warn" id="t-warn">剩下A液容量已經是負值，請確認透析時間/流速是否超過A液可用範圍。</div>
+
+      <button class="toggle-btn" id="t-toggle">顯示計算過程 ▾</button>
+      <div class="details" id="t-details">
+        <div class="detail-row"><span class="k">預期A液中鉀濃度 (mEq/L)</span><span class="v" id="t-d1">--</span></div>
+        <div class="detail-row"><span class="k">剩下A液容量 (L)</span><span class="v" id="t-d2">--</span></div>
+        <div class="detail-row"><span class="k">預期A液中鉀含量 (mEq)</span><span class="v" id="t-d3">--</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function fmt(n, digits = 3) {
+  if (!isFinite(n)) return '--';
+  return Number(n.toFixed(digits)).toString();
+}
+
+function bindTabs() {
+  const tabs = document.querySelectorAll('.tab-btn');
+  tabs.forEach(btn => {
+    btn.addEventListener('click', () => {
+      tabs.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+      document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
+    });
+  });
+}
+
+function bindToggle(toggleId, detailsId) {
+  const btn = document.getElementById(toggleId);
+  const details = document.getElementById(detailsId);
+  btn.addEventListener('click', () => {
+    const showing = details.classList.toggle('show');
+    btn.textContent = showing ? '隱藏計算過程 ▴' : '顯示計算過程 ▾';
+  });
+}
+
+function calcQuery() {
+  const dilution = parseFloat(document.getElementById('q-dilution').value);
+  const volA = parseFloat(document.getElementById('q-volA').value);
+  const addedK = parseFloat(document.getElementById('q-addedK').value);
+  const time = parseFloat(document.getElementById('q-time').value);
+  const flow = parseFloat(document.getElementById('q-flow').value);
+
+  const concA = dilution * 2;                                  // A液中鉀濃度
+  const remainVolA = volA - (time * (flow / 1000)) / dilution;  // 剩下A液容量
+  const remainK = remainVolA * concA;                           // A液剩下鉀含量
+  const afterAddK = remainK + addedK;                           // 外加鉀後A液鉀含量
+  const afterAddConc = afterAddK / remainVolA;                  // 外加鉀後A液鉀濃度
+  const equivMeq = afterAddConc * volA - concA * volA;          // 相當於原本加多少mEq的鉀
+  const dialysateConc = afterAddConc / dilution;                // 透析液中鉀濃度
+
+  document.getElementById('q-result').innerHTML = fmt(dialysateConc) + '<span class="unit">mEq/L</span>';
+  document.getElementById('q-d1').textContent = fmt(concA);
+  document.getElementById('q-d2').textContent = fmt(remainVolA);
+  document.getElementById('q-d3').textContent = fmt(remainK);
+  document.getElementById('q-d4').textContent = fmt(afterAddK);
+  document.getElementById('q-d5').textContent = fmt(afterAddConc);
+  document.getElementById('q-d6').textContent = fmt(equivMeq);
+
+  document.getElementById('q-warn').classList.toggle('show', remainVolA < 0);
+}
+
+function calcTarget() {
+  const dilution = parseFloat(document.getElementById('t-dilution').value);
+  const targetK = parseFloat(document.getElementById('t-targetK').value);
+  const volA = parseFloat(document.getElementById('t-volA').value);
+  const time = parseFloat(document.getElementById('t-time').value);
+  const flow = parseFloat(document.getElementById('t-flow').value);
+
+  const expectConcA = dilution * targetK;                       // 預期A液中鉀濃度
+  const remainVolA = volA - (flow / 1000) * time / dilution;    // 剩下A液容量
+  const expectK = expectConcA * remainVolA;                     // 預期A液中鉀含量
+  const totalAdd = expectK - 2 * dilution * remainVolA;         // 總共要外加多少鉀
+
+  document.getElementById('t-result').innerHTML = fmt(totalAdd) + '<span class="unit">mEq</span>';
+  document.getElementById('t-d1').textContent = fmt(expectConcA);
+  document.getElementById('t-d2').textContent = fmt(remainVolA);
+  document.getElementById('t-d3').textContent = fmt(expectK);
+
+  document.getElementById('t-warn').classList.toggle('show', remainVolA < 0);
+}
+
+function bindInputs(ids, fn) {
+  ids.forEach(id => document.getElementById(id).addEventListener('input', fn));
+}
+
+bindTabs();
+bindToggle('q-toggle', 'q-details');
+bindToggle('t-toggle', 't-details');
+
+bindInputs(['q-dilution', 'q-volA', 'q-addedK', 'q-time', 'q-flow'], calcQuery);
+bindInputs(['t-dilution', 't-targetK', 't-volA', 't-time', 't-flow'], calcTarget);
+
+calcQuery();
+calcTarget();
+</script>
