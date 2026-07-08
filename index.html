@@ -156,6 +156,54 @@
     display: none;
   }
   .warn.show { display: block; }
+
+  /* Footer & Credit Styles */
+  footer {
+    margin-top: 24px;
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+  footer a {
+    color: var(--primary);
+    text-decoration: none;
+  }
+  footer a:hover {
+    text-decoration: underline;
+  }
+  .disclaimer {
+    margin-top: 12px;
+    font-size: 0.75rem;
+    color: #94a3b8;
+  }
+  .rare-char {
+    display: inline-block;
+    position: relative;
+    width: 1em;
+    height: 1em;
+    vertical-align: -0.12em;
+    overflow: hidden;
+  }
+  .rare-char .char-top, .rare-char .char-bottom {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    font-size: 90%;
+    line-height: 1;
+    display: block;
+  }
+  .rare-char .char-top {
+    top: 0;
+    transform: scale(0.85, 0.58);
+    transform-origin: top center;
+  }
+  .rare-char .char-bottom {
+    bottom: 0;
+    transform: scale(0.85, 0.58);
+    transform-origin: bottom center;
+  }
 </style>
 
 <div class="container">
@@ -245,6 +293,17 @@
       </div>
     </div>
   </div>
+
+  <footer>
+    <div class="footer-content">
+      <p class="copyright">© 2026 補充鉀離子計算器. All Rights Reserved.</p>
+      <p class="credits">
+        開發與維護：台北醫學大學醫學系六年級 張<span class="rare-char" aria-label="𣁎" title="𣁎"><span class="char-top" aria-hidden="true">文</span><span class="char-bottom" aria-hidden="true">言</span></span>崴 (聯絡信箱：<a href="mailto:b101110154@tmu.edu.tw">b101110154@tmu.edu.tw</a>)<br>
+        指導老師：衛生福利部雙和醫院 腎臟內科 陳佑瑋 醫師
+      </p>
+      <p class="disclaimer">※ 本工具僅供醫療專業人員參考，臨床決策請依患者實際狀況與醫療專業判斷為準。</p>
+    </div>
+  </footer>
 </div>
 
 <script>
